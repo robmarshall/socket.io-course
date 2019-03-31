@@ -29,5 +29,20 @@ namespaces.forEach(namespace =>
         // A socket has connected to one of our namespaces
         // Now send info back
         nsSocket.emit('nsRoomLoad', namespaces[0].rooms)
+        nsSocket.on('joinRoom', (roomToJoin, newNumberOfUsersCallback) => {
+            // Deal with history later
+            nsSocket.join(roomToJoin)
+            io.of('/wiki')
+                .in(roomToJoin)
+                .clients((error, clients) => {
+                    newNumberOfUsersCallback(clients.length)
+                })
+        })
+        nsSocket.on('newMessageToServer', msg => {
+            const roomTitle = Object.keys(nsSocket.rooms)[1]
+            io.of('/wiki')
+                .to(roomTitle)
+                .emit('messageToClients', msg)
+        })
     })
 )
