@@ -12,9 +12,10 @@ socket.on('nsList', nsData => {
     })
 
     // Add a click listener for each namespace
-    Array.from(document.getElementsByClassName('.namespace')).forEach(elem => {
+    Array.from(document.getElementsByClassName('namespace')).forEach(elem => {
         elem.addEventListener('click', e => {
             const nsEndpoint = elem.getAttribute('ns')
+            joinNs(nsEndpoint)
         })
     })
 
