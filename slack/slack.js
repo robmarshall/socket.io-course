@@ -37,6 +37,13 @@ namespaces.forEach(namespace =>
                 .clients((error, clients) => {
                     newNumberOfUsersCallback(clients.length)
                 })
+            const nsRoom = namespaces[0].rooms.find(room => {
+                return room.roomTitle === roomToJoin
+            })
+            nsSocket.emit('historyCatchUp', nsRoom.history)
+            io.of('/wiki')
+                .in(roomToJoin)
+                .clients((error, clients) => {})
         })
         nsSocket.on('newMessageToServer', msg => {
             const fullMsg = {
@@ -46,6 +53,11 @@ namespaces.forEach(namespace =>
                 avatar: 'https://via.placeholder.com/30',
             }
             const roomTitle = Object.keys(nsSocket.rooms)[1]
+            // Need to find the Room object for this room
+            const nsRoom = namespaces[0].rooms.find(room => {
+                return room.roomTitle === roomTitle
+            })
+            nsRoom.addMessage(fullMsg)
             io.of('/wiki')
                 .to(roomTitle)
                 .emit('messageToClients', fullMsg)
