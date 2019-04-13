@@ -28,22 +28,23 @@ namespaces.forEach(namespace =>
         console.log(`${nsSocket.id} has joined ${namespace.endpoint}`)
         // A socket has connected to one of our namespaces
         // Now send info back
-        nsSocket.emit('nsRoomLoad', namespaces[0].rooms)
+        nsSocket.emit('nsRoomLoad', namespace.rooms)
         nsSocket.on('joinRoom', (roomToJoin, newNumberOfUsersCallback) => {
             // Deal with history later
+            const roomToLeave = Object.keys(nsSocket.rooms)[1]
+            nsSocket.leave(roomToLeave)
+            updateUsersInRoom(namespace, roomToLeave)
             nsSocket.join(roomToJoin)
-            io.of('/wiki')
-                .in(roomToJoin)
-                .clients((error, clients) => {
-                    newNumberOfUsersCallback(clients.length)
-                })
-            const nsRoom = namespaces[0].rooms.find(room => {
+            // io.of('/wiki')
+            //     .in(roomToJoin)
+            //     .clients((error, clients) => {
+            //         newNumberOfUsersCallback(clients.length)
+            //     })
+            const nsRoom = namespace.rooms.find(room => {
                 return room.roomTitle === roomToJoin
             })
             nsSocket.emit('historyCatchUp', nsRoom.history)
-            io.of('/wiki')
-                .in(roomToJoin)
-                .clients((error, clients) => {})
+            updateUsersInRoom(namespace, roomToJoin)
         })
         nsSocket.on('newMessageToServer', msg => {
             const fullMsg = {
@@ -54,13 +55,23 @@ namespaces.forEach(namespace =>
             }
             const roomTitle = Object.keys(nsSocket.rooms)[1]
             // Need to find the Room object for this room
-            const nsRoom = namespaces[0].rooms.find(room => {
+            const nsRoom = namespace.rooms.find(room => {
                 return room.roomTitle === roomTitle
             })
             nsRoom.addMessage(fullMsg)
-            io.of('/wiki')
+            io.of(namespace.endpoint)
                 .to(roomTitle)
                 .emit('messageToClients', fullMsg)
         })
     })
 )
+
+function updateUsersInRoom(namespace, roomToJoin) {
+    io.of(namespace.endpoint)
+        .in(roomToJoin)
+        .clients((error, clients) => {
+            io.of(namespace.endpoint)
+                .in(roomToJoin)
+                .emit('updateMembers', clients.length)
+        })
+}
