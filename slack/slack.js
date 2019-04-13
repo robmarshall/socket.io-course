@@ -25,7 +25,7 @@ io.on('connection', socket => {
 // Loop through namespaced and listen for connections
 namespaces.forEach(namespace =>
     io.of(namespace.endpoint).on('connection', nsSocket => {
-        console.log(`${nsSocket.id} has joined ${namespace.endpoint}`)
+        const username = nsSocket.handshake.query.username
         // A socket has connected to one of our namespaces
         // Now send info back
         nsSocket.emit('nsRoomLoad', namespace.rooms)
@@ -50,7 +50,7 @@ namespaces.forEach(namespace =>
             const fullMsg = {
                 text: msg.text,
                 time: Date.now(),
-                username: 'dsfdsf',
+                username: username,
                 avatar: 'https://via.placeholder.com/30',
             }
             const roomTitle = Object.keys(nsSocket.rooms)[1]
