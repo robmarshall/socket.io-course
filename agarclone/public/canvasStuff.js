@@ -3,20 +3,43 @@ function init() {
 }
 
 //=========== Drawing ===========
-let randomX = Math.floor(500 * Math.random() + 10)
-let randomY = Math.floor(500 * Math.random() + 10)
+player.locX = Math.floor(500 * Math.random() + 10)
+player.locY = Math.floor(500 * Math.random() + 10)
+
 function draw() {
+    // reset translation back to default
+    context.setTransform(1, 0, 0, 1, 0, 0)
+
+    // Clear the screen on each render
+    context.clearRect(0, 0, canvas.width, canvas.height)
+
+    // Fix camera to player
+    const camX = -player.locX + canvas.width / 2
+    const camY = -player.locY + canvas.height / 2
+
+    // translate allows us to move the canvas around
+    context.translate(camX, camY)
+
     context.beginPath()
     context.fillStyle = 'rgb(255,0,0)'
     // arg1,2 = x,y of the arc
     // arg3 = radius
     // arg4 = where the circle starts
     // arg5 = where the circle stops
-    context.arc(randomX, randomY, 10, 0, Math.PI * 2)
+    context.arc(player.locX, player.locY, 10, 0, Math.PI * 2)
     context.fill()
     context.lineWidth = 3
     context.strokeStyle = 'rgb(0,255,0)'
     context.stroke()
+
+    // Make background orbs
+    orbs.forEach(orb => {
+        context.beginPath()
+        context.fillStyle = orb.color
+        context.arc(orb.locX, orb.locY, orb.radius, 0, Math.PI * 2)
+        context.fill()
+    })
+
     requestAnimationFrame(draw)
 }
 
