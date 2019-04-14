@@ -7,6 +7,15 @@ let orbs = []
 initGame()
 
 io.sockets.on('connect', socket => {
+    // A player has connected
+    // Make a play config object
+
+    // let playerConfig = new PlayerConfig()
+    // let playerData = new PlayerData()
+
+    // Make a master player object
+    // let player = new Player(socket.id, playerConfig, playerData)
+
     socket.emit('init', {
         orbs,
     })
