@@ -1,6 +1,11 @@
 // Where all main socket code goes
 const io = require('../servers').io
 
+// ========== CLASSES ============
+const Player = require('./classes/Player')
+const PlayerData = require('./classes/PlayerData')
+const PlayerConfig = require('./classes/Playerconfig')
+
 const Orb = require('./classes/Orb')
 let orbs = []
 let settings = {
@@ -19,11 +24,11 @@ io.sockets.on('connect', socket => {
     // A player has connected
     // Make a play config object
 
-    // let playerConfig = new PlayerConfig()
-    // let playerData = new PlayerData()
+    let playerConfig = new PlayerConfig(settings)
+    let playerData = new PlayerData(null, settings)
 
     // Make a master player object
-    // let player = new Player(socket.id, playerConfig, playerData)
+    let Player = new Player(socket.id, playerConfig, playerData)
 
     socket.emit('init', {
         orbs,
