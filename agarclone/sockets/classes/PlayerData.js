@@ -1,4 +1,4 @@
-const getRandomColor = require('../getRandomColor')
+const getRandomColor = require('./getRandomColor')
 
 // This is where the data that everyone needs is stored
 class PlayerData {
@@ -10,3 +10,5 @@ class PlayerData {
         this.color = getRandomColor()
     }
 }
+
+module.exports = PlayerData
